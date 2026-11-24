@@ -7,7 +7,8 @@ be tested locally.
 
 Fails loudly if anything is off: the text is not valid UTF-8, it is
 not 1-160 characters, it is not a single line, it is only white
-space, or the written copy differs from line.txt in size or bytes.
+space, it contains a control character, or the written copy differs
+from line.txt in size or bytes.
 
 Standard library only. No network, no randomness, no timestamps.
 """
@@ -45,6 +46,8 @@ def main() -> None:
         fail("entry must be a single line")
     if not text.strip():
         fail("entry must not be only white space")
+    if any(ord(ch) < 0x20 or ord(ch) == 0x7F for ch in text):
+        fail("entry must not contain control characters")
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     OUTPUT_FILE.write_bytes(source)
